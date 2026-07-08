@@ -1,20 +1,5 @@
 # 🎵 Music Recommender Simulation
 
-## Project Summary
-
-In this project you will build and explain a small music recommender system.
-
-Your goal is to:
-
-- Represent songs and a user "taste profile" as data
-- Design a scoring rule that turns that data into recommendations
-- Evaluate what your system gets right and wrong
-- Reflect on how this mirrors real world AI recommenders
-
-Replace this paragraph with your own summary of what your version does.
-
----
-
 ## How The System Works
 
 This is a content-based recommender: it scores each song by how well the song's own attributes match a user's stated taste. It uses no data about other listeners, but only the song features and the user's preferences.

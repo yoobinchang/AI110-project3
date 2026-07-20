@@ -1,3 +1,5 @@
+import csv
+
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 
@@ -46,28 +48,102 @@ class Recommender:
         return "Explanation placeholder"
 
 def load_songs(csv_path: str) -> List[Dict]:
-    """
-    Loads songs from a CSV file.
-    Required by src/main.py
-    """
-    # TODO: Implement CSV loading logic
-    print(f"Loading songs from {csv_path}...")
-    return []
+    """Load songs from a CSV file and convert numeric fields."""
+    songs = []
+
+    with open(csv_path, mode="r", encoding="utf-8", newline="") as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        for row in reader:
+            row["id"] = int(row["id"])
+            row["energy"] = float(row["energy"])
+            row["tempo_bpm"] = int(row["tempo_bpm"])
+            row["valence"] = float(row["valence"])
+            row["danceability"] = float(row["danceability"])
+            row["acousticness"] = float(row["acousticness"])
+            songs.append(row)
+
+    return songs
 
 def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
-    """
-    Scores a single song against user preferences.
-    Required by recommend_songs() and src/main.py
-    """
-    # TODO: Implement scoring logic using your Algorithm Recipe from Phase 2.
-    # Expected return format: (score, reasons)
-    return []
+    """Score one song against user preferences and explain each component."""
+    genre_groups = (
+        {"pop", "indie pop"},
+        {"synthwave", "edm"},
+        {"ambient", "lofi", "classical", "jazz"},
+        {"folk", "country", "blues"},
+        {"hip hop", "funk", "soul", "reggae"},
+        {"rock", "metal"},
+    )
+    mood_groups = (
+        {"happy", "hopeful", "playful", "euphoric"},
+        {"chill", "relaxed", "focused", "dreamy"},
+        {"moody", "nostalgic", "melancholy", "sad"},
+        {"energetic", "intense", "angry"},
+        {"romantic"},
+    )
+
+    def normalize(value: str) -> str:
+        """Normalize a categorical value for comparison."""
+        return value.strip().lower()
+
+    def are_related(first: str, second: str, groups: Tuple[set, ...]) -> bool:
+        """Return whether two labels belong to the same related group."""
+        return any(first in group and second in group for group in groups)
+
+    score = 0.0
+    reasons = []
+
+    preferred_genre = normalize(user_prefs["genre"])
+    song_genre = normalize(song["genre"])
+    if song_genre == preferred_genre:
+        score += 2.0
+        reasons.append("genre match (+2.0)")
+    elif are_related(song_genre, preferred_genre, genre_groups):
+        score += 0.75
+        reasons.append("related genre match (+0.75)")
+    else:
+        reasons.append("genre mismatch (+0.0)")
+
+    preferred_mood = normalize(user_prefs["mood"])
+    song_mood = normalize(song["mood"])
+    if song_mood == preferred_mood:
+        score += 1.0
+        reasons.append("mood match (+1.0)")
+    elif are_related(song_mood, preferred_mood, mood_groups):
+        score += 0.4
+        reasons.append("related mood match (+0.4)")
+    else:
+        reasons.append("mood mismatch (+0.0)")
+
+    target_energy = user_prefs.get("energy")
+    if target_energy is not None:
+        energy_difference = abs(float(song["energy"]) - float(target_energy))
+        energy_score = 1.5 * max(0.0, 1.0 - energy_difference / 0.5)
+        score += energy_score
+        reasons.append(
+            f"energy difference {energy_difference:.2f} (+{energy_score:.2f})"
+        )
+    else:
+        reasons.append("energy preference not provided (not scored)")
+
+    return round(score, 2), reasons
 
 def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
-    """
-    Functional implementation of the recommendation logic.
-    Required by src/main.py
-    """
-    # TODO: Implement scoring and ranking logic
-    # Expected return format: (song_dict, score, explanation)
-    return []
+    """Rank all songs by score and return the top k recommendations."""
+    if k <= 0:
+        return []
+
+    scored_songs = []
+    for song in songs:
+        score, reasons = score_song(user_prefs, song)
+        explanation = "; ".join(reasons)
+        scored_songs.append((song, score, explanation))
+
+    ranked_songs = sorted(
+        scored_songs,
+        key=lambda recommendation: recommendation[1],
+        reverse=True,
+    )
+
+    return ranked_songs[:k]

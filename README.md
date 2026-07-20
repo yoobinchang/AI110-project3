@@ -167,6 +167,272 @@ Keeping the two rules separate means the scoring math (the theory of taste)
 can be tuned and tested on its own, while the ranking logic (sort, cut to k,
 format) stays unchanged.
 
+## Adversarial Profile Terminal Results
+
+The following output was produced by running the dictionary-based recommender
+against the 20-song catalog. Unless noted otherwise, each profile requested
+five recommendations.
+
+### Conflicting affect (`pop`, `sad`, `0.90`)
+
+```text
+returned 5 result(s)
+1. Gym Hero — Max Pulse | 3.41
+2. Sunrise City — Neon Echo | 3.26
+3. Rooftop Lights — Indigo Parade | 1.83
+4. Storm Runner — Voltline | 1.47
+5. Night Drive Loop — Neon Echo | 1.45
+```
+
+### Extreme conflict (`metal`, `sad`, `0.10`)
+
+```text
+returned 5 result(s)
+1. Iron Verdict — Ashfall | 2.00
+2. Empty Barroom — Cadillac Moon | 1.60
+3. Winter Nocturne — Elias Farr | 1.30
+4. Spacewalk Thoughts — Orbit Bloom | 0.96
+5. Storm Runner — Voltline | 0.75
+```
+
+### Unknown categories (`opera`, `confused`, `0.50`)
+
+```text
+returned 5 result(s)
+1. Dust Road Home — Sarah Wren | 1.50
+2. Velvet Letter — June Amara | 1.44
+3. Island Time — Palm Riddim | 1.35
+4. Open Fields — The Willow Road | 1.35
+5. Midnight Coding — LoRoom | 1.26
+```
+
+### Typo profile (`popp`, `hapy`, `0.80`)
+
+```text
+returned 5 result(s)
+1. Bassment Party — Groove Machine | 1.50
+2. Sunrise City — Neon Echo | 1.44
+3. Rooftop Lights — Indigo Parade | 1.38
+4. Night Drive Loop — Neon Echo | 1.35
+5. Concrete Kings — Blockprint | 1.35
+```
+
+### Unicode look-alike (`pоp`, `happy`, `0.80`)
+
+The `о` in `pоp` is Cyrillic rather than Latin.
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 2.44
+2. Rooftop Lights — Indigo Parade | 2.38
+3. Bassment Party — Groove Machine | 1.90
+4. Neon Horizon — Pulsewave | 1.45
+5. Night Drive Loop — Neon Echo | 1.35
+```
+
+### Blank categories (`""`, `" "`, `0.50`)
+
+```text
+returned 5 result(s)
+1. Dust Road Home — Sarah Wren | 1.50
+2. Velvet Letter — June Amara | 1.44
+3. Island Time — Palm Riddim | 1.35
+4. Open Fields — The Willow Road | 1.35
+5. Midnight Coding — LoRoom | 1.26
+```
+
+### Missing energy (`pop`, `happy`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 3.00
+2. Gym Hero — Max Pulse | 2.00
+3. Rooftop Lights — Indigo Parade | 1.75
+4. Neon Horizon — Pulsewave | 0.40
+5. Open Fields — The Willow Road | 0.40
+```
+
+### Missing genre
+
+```text
+KeyError: 'genre'
+```
+
+### Missing mood
+
+```text
+KeyError: 'mood'
+```
+
+### Very high energy (`pop`, `happy`, `10`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 3.00
+2. Gym Hero — Max Pulse | 2.00
+3. Rooftop Lights — Indigo Parade | 1.75
+4. Neon Horizon — Pulsewave | 0.40
+5. Open Fields — The Willow Road | 0.40
+```
+
+### Negative energy (`pop`, `happy`, `-5`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 3.00
+2. Gym Hero — Max Pulse | 2.00
+3. Rooftop Lights — Indigo Parade | 1.75
+4. Neon Horizon — Pulsewave | 0.40
+5. Open Fields — The Willow Road | 0.40
+```
+
+### NaN energy (`pop`, `happy`, `"nan"`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 3.00
+2. Gym Hero — Max Pulse | 2.00
+3. Rooftop Lights — Indigo Parade | 1.75
+4. Neon Horizon — Pulsewave | 0.40
+5. Open Fields — The Willow Road | 0.40
+```
+
+### Infinite energy (`pop`, `happy`, `"inf"`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 3.00
+2. Gym Hero — Max Pulse | 2.00
+3. Rooftop Lights — Indigo Parade | 1.75
+4. Neon Horizon — Pulsewave | 0.40
+5. Open Fields — The Willow Road | 0.40
+```
+
+### Boolean energy (`pop`, `happy`, `True`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 3.96
+2. Gym Hero — Max Pulse | 3.29
+3. Rooftop Lights — Indigo Parade | 2.53
+4. Neon Horizon — Pulsewave | 1.75
+5. Iron Verdict — Ashfall | 1.44
+```
+
+### Numeric string (`pop`, `happy`, `"0.8"`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 4.44
+2. Rooftop Lights — Indigo Parade | 3.13
+3. Gym Hero — Max Pulse | 3.11
+4. Bassment Party — Groove Machine | 1.90
+5. Neon Horizon — Pulsewave | 1.45
+```
+
+### Huge numeric string (`pop`, `happy`, 5,000-digit energy)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 3.00
+2. Gym Hero — Max Pulse | 2.00
+3. Rooftop Lights — Indigo Parade | 1.75
+4. Neon Horizon — Pulsewave | 0.40
+5. Open Fields — The Willow Road | 0.40
+```
+
+### Case and whitespace control (`" POP "`, `" Happy "`, `0.80`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 4.44
+2. Rooftop Lights — Indigo Parade | 3.13
+3. Gym Hero — Max Pulse | 3.11
+4. Bassment Party — Groove Machine | 1.90
+5. Neon Horizon — Pulsewave | 1.45
+```
+
+### Related-group surprise (`classical`, `chill`, `0.40`)
+
+```text
+returned 5 result(s)
+1. Winter Nocturne — Elias Farr | 3.20
+2. Midnight Coding — LoRoom | 3.19
+3. Library Rain — Paper Lanterns | 3.10
+4. Spacewalk Thoughts — Orbit Bloom | 2.89
+5. Focus Flow — LoRoom | 2.65
+```
+
+### Angry but mellow (`ambient`, `angry`, `0.20`)
+
+```text
+returned 5 result(s)
+1. Spacewalk Thoughts — Orbit Bloom | 3.26
+2. Winter Nocturne — Elias Farr | 1.95
+3. Library Rain — Paper Lanterns | 1.80
+4. Coffee Shop Stories — Slow Stereo | 1.74
+5. Focus Flow — LoRoom | 1.65
+```
+
+### Romantic metal (`metal`, `romantic`, `0.95`)
+
+```text
+returned 5 result(s)
+1. Iron Verdict — Ashfall | 3.41
+2. Storm Runner — Voltline | 2.13
+3. Neon Horizon — Pulsewave | 1.50
+4. Gym Hero — Max Pulse | 1.44
+5. Velvet Letter — June Amara | 1.21
+```
+
+### All-zero tie (`opera`, `confused`, `10`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 0.00
+2. Midnight Coding — LoRoom | 0.00
+3. Storm Runner — Voltline | 0.00
+4. Library Rain — Paper Lanterns | 0.00
+5. Gym Hero — Max Pulse | 0.00
+```
+
+### Acoustic tie proxy (`likes_acoustic=True`)
+
+```text
+returned 5 result(s)
+1. Sunrise City — Neon Echo | 0.00
+2. Midnight Coding — LoRoom | 0.00
+3. Storm Runner — Voltline | 0.00
+4. Library Rain — Paper Lanterns | 0.00
+5. Gym Hero — Max Pulse | 0.00
+```
+
+### Boolean result count (`k=True`)
+
+```text
+returned 1 result(s)
+1. Sunrise City — Neon Echo | 4.44
+```
+
+### Fractional result count (`k=2.5`)
+
+```text
+TypeError: slice indices must be integers or None or have an __index__ method
+```
+
+### Huge result count (`k=1_000_000`)
+
+Only the first five of the 20 returned results are displayed here.
+
+```text
+returned 20 result(s)
+1. Sunrise City — Neon Echo | 4.44
+2. Rooftop Lights — Indigo Parade | 3.13
+3. Gym Hero — Max Pulse | 3.11
+4. Bassment Party — Groove Machine | 1.90
+5. Neon Horizon — Pulsewave | 1.45
+```
+
 
 ---
 
@@ -261,35 +527,57 @@ Showing top 5 results
 
 ## Experiments You Tried
 
-Use this section to document the experiments you ran. For example:
+I tested normal, conflicting, and invalid user profiles. One conflicting
+profile asked for metal, sad music, and very low energy. The original score put
+the angry, high-energy metal song "Iron Verdict" first. Its exact genre match
+was strong enough to beat better mood and energy matches.
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+I also ran a weight-shift experiment. I cut the exact genre weight from 2.0 to
+1.0. I doubled the maximum energy score from 1.5 to 3.0. The score maximum
+changed from 4.5 to 5.0. The new rankings favored songs close to the target
+energy. They did not always fit the requested genre or mood. For example,
+"Iron Verdict" entered the High-Energy Pop top five. The change made the lists
+different, but not always more accurate.
+
+I also tested missing fields, unknown labels, invalid energy values, and unusual
+values for `k`. Missing genre or mood values caused errors. Unknown labels were
+silently ignored. Energy values such as `10`, `-5`, `nan`, and `inf` were
+accepted but earned no energy points. Equal scores kept the order from the CSV
+file.
 
 ---
 
 ## Limitations and Risks
 
-Summarize some limitations of your recommender.
+The catalog has only 20 songs. It has more high-energy songs than low-energy
+songs. This gives high-energy users more choices. The model does not understand
+lyrics, language, context, or changing tastes.
 
-Examples:
+Energy now supplies three of the five possible points. A song can rank highly
+even when its genre and mood are wrong. This can create an energy filter bubble.
+The model may keep showing similar songs instead of offering variety.
 
-- It only works on a tiny catalog
-- It does not understand lyrics or language
-- It might over favor one genre or mood
-
-You will go deeper on this in your model card.
+The genre and mood groups are based on the designer's choices. Some users may
+not agree that the grouped labels are similar. Unsupported labels get no
+credit. Tied songs favor earlier rows in the CSV file. The scores are simple
+match values. They are not probabilities or measures of song quality.
 
 ---
 
 ## Reflection
 
-Read and complete `model_card.md`:
+My biggest learning moment was the weight-shift experiment. A small change to
+the score caused unrelated songs to move into the top five. This showed me that
+the weights are choices about what matters. They are not neutral facts.
 
-[**Model Card**](model_card.md)
+AI tools helped me create test profiles and notice edge cases. They also helped
+me compare the output. I still needed to run the code and check the math. AI
+suggestions can sound correct even when they do not match the real output.
 
-Write 1 to 2 paragraphs here about what you learned:
+I was surprised that a simple point system could feel personal. A matching song
+title, mood, or energy level makes the list seem thoughtful. The system does not
+truly understand the listener. It only sorts numbers and labels.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+If I extended the project, I would validate user input first. I would use tempo,
+valence, danceability, and acousticness. I would also add a variety rule. This
+would stop one energy level, genre, or artist from taking over the list.

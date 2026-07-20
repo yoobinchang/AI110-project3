@@ -97,11 +97,11 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     preferred_genre = normalize(user_prefs["genre"])
     song_genre = normalize(song["genre"])
     if song_genre == preferred_genre:
-        score += 2.0
-        reasons.append("genre match (+2.0)")
+        score += 1.0
+        reasons.append("genre match (+1.0)")
     elif are_related(song_genre, preferred_genre, genre_groups):
-        score += 0.75
-        reasons.append("related genre match (+0.75)")
+        score += 0.375
+        reasons.append("related genre match (+0.375)")
     else:
         reasons.append("genre mismatch (+0.0)")
 
@@ -119,7 +119,7 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     target_energy = user_prefs.get("energy")
     if target_energy is not None:
         energy_difference = abs(float(song["energy"]) - float(target_energy))
-        energy_score = 1.5 * max(0.0, 1.0 - energy_difference / 0.5)
+        energy_score = 3.0 * max(0.0, 1.0 - energy_difference / 0.5)
         score += energy_score
         reasons.append(
             f"energy difference {energy_difference:.2f} (+{energy_score:.2f})"
